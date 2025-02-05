@@ -106,7 +106,7 @@ const ColdRoomTracker: React.FC = () => {
     }
   ];
 
-  const [coldrooms, setColdrooms] = useState<ColdRoom[]>(mockData);
+  const [coldrooms] = useState<ColdRoom[]>(mockData);
   
   const getStatusColor = (status: string): string => {
     switch (status) {
@@ -144,7 +144,6 @@ const ColdRoomTracker: React.FC = () => {
               </button>
             </div>
 
-            {/* Maintenance Alert */}
             {room.maintenanceNeeded && (
               <Alert className="bg-red-50 border-red-200">
                 <AlertTitle className="text-red-800">Maintenance Required</AlertTitle>
@@ -154,76 +153,140 @@ const ColdRoomTracker: React.FC = () => {
               </Alert>
             )}
 
-            {/* Critical Items */}
-            {room.inventory.critical.length > 0 && (
-              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                <h3 className="text-lg font-semibold text-yellow-800 mb-2">Critical Items - Expiring Soon</h3>
-                <div className="space-y-2">
-                  {room.inventory.critical.map((item, idx) => (
-                    <div key={idx} className="flex justify-between items-center">
-                      <span>{item.item} - {item.quantity}</span>
-                      <span className="text-red-600">Expires in {item.daysLeft} days</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Today's Activity */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Today's Incoming</h3>
-                <div className="space-y-2">
-                  {room.inventory.incoming.map((item, idx) => (
-                    <div key={idx} className="p-2 bg-gray-50 rounded">
-                      <div>{item.item} - {item.quantity}</div>
-                      <div className="text-sm text-gray-600">From: {item.farmer}</div>
+              {/* Status Overview */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Status Overview</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600">Temperature</span>
+                      <span className="font-semibold">{room.temperature}°C</span>
                     </div>
-                  ))}
-                </div>
-              </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600">Capacity Usage</span>
+                      <span className="font-semibold">
+                        {getCapacityPercentage(room.usedCapacity, room.totalCapacity)}%
+                      </span>
+                    </div>
+                    <div className="w-full bg-gray-200 rounded-full h-2.5">
+                      <div 
+                        className="bg-blue-600 h-2.5 rounded-full" 
+                        style={{ width: `${getCapacityPercentage(room.usedCapacity, room.totalCapacity)}%` }}
+                      ></div>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-600">Last Checked</span>
+                      <span className="font-semibold">{room.lastChecked}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
 
-              <div className="space-y-4">
-                <h3 className="text-lg font-semibold">Today's Outgoing</h3>
-                <div className="space-y-2">
-                  {room.inventory.outgoing.map((item, idx) => (
-                    <div key={idx} className="p-2 bg-gray-50 rounded">
-                      <div>{item.item} - {item.quantity}</div>
-                      <div className="text-sm text-gray-600">To: {item.client}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              {/* Critical Items */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Critical Items</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {room.inventory.critical.map((item, idx) => (
+                      <div key={idx} className="flex justify-between items-center p-2 bg-red-50 rounded-lg">
+                        <div>
+                          <div className="font-medium">{item.item}</div>
+                          <div className="text-sm text-gray-600">{item.quantity}</div>
+                        </div>
+                        <div className="text-red-600 text-sm">
+                          Expires in {item.daysLeft} days
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Today's Activity */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Today's Incoming</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {room.inventory.incoming.map((item, idx) => (
+                      <div key={idx} className="p-3 bg-gray-50 rounded-lg">
+                        <div className="font-medium">{item.item}</div>
+                        <div className="text-sm text-gray-600">
+                          Quantity: {item.quantity}
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          Farmer: {item.farmer}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Today's Outgoing</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {room.inventory.outgoing.map((item, idx) => (
+                      <div key={idx} className="p-3 bg-gray-50 rounded-lg">
+                        <div className="font-medium">{item.item}</div>
+                        <div className="text-sm text-gray-600">
+                          Quantity: {item.quantity}
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          Client: {item.client}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
             </div>
 
             {/* Pickup Schedule */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold">Upcoming Pickups</h3>
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">Date</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">Item</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">Quantity</th>
-                    <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">Client</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {room.inventory.pickupSchedule.map((pickup, idx) => (
-                    <tr key={idx}>
-                      <td className="px-4 py-2">{pickup.date}</td>
-                      <td className="px-4 py-2">{pickup.item}</td>
-                      <td className="px-4 py-2">{pickup.quantity}</td>
-                      <td className="px-4 py-2">{pickup.client}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <Card>
+              <CardHeader>
+                <CardTitle>Upcoming Pickups</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full divide-y divide-gray-200">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">Date</th>
+                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">Item</th>
+                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">Quantity</th>
+                        <th className="px-4 py-2 text-left text-xs font-medium text-gray-500">Client</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200">
+                      {room.inventory.pickupSchedule.map((pickup, idx) => (
+                        <tr key={idx}>
+                          <td className="px-4 py-2">{pickup.date}</td>
+                          <td className="px-4 py-2">{pickup.item}</td>
+                          <td className="px-4 py-2">{pickup.quantity}</td>
+                          <td className="px-4 py-2">{pickup.client}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </CardContent>
+            </Card>
 
-            <Button onClick={onClose} className="w-full">
-              Close
-            </Button>
+            <div className="flex justify-end">
+              <Button onClick={onClose}>
+                Close
+              </Button>
+            </div>
           </div>
         </div>
       </div>
@@ -231,54 +294,63 @@ const ColdRoomTracker: React.FC = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-4">
-      <Card>
-        <CardHeader>
-          <CardTitle>Coldroom Status Dashboard</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-6">
-            {/* Summary Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {coldrooms.map(room => (
-                <Card 
-                  key={room.id}
-                  className="cursor-pointer hover:shadow-lg transition-shadow"
-                  onClick={() => handleCardClick(room)}
-                >
-                  <CardContent className="pt-6">
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-center">
-                        <h3 className="font-medium text-lg">{room.location}</h3>
-                        <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(room.status)}`}>
-                          {room.status}
-                        </span>
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <div className="flex justify-between text-sm">
-                          <span>Capacity Usage:</span>
-                          <span>{getCapacityPercentage(room.usedCapacity, room.totalCapacity)}%</span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2.5">
-                          <div 
-                            className="bg-blue-600 h-2.5 rounded-full" 
-                            style={{ width: `${getCapacityPercentage(room.usedCapacity, room.totalCapacity)}%` }}
-                          ></div>
-                        </div>
-                        <div className="grid grid-cols-2 gap-2 text-sm">
-                          <div>Temperature: {room.temperature}°C</div>
-                          <div>Last Check: {room.lastChecked}</div>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+    <div className="space-y-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {coldrooms.map(room => (
+          <Card 
+            key={room.id}
+            className="hover:shadow-lg transition-shadow cursor-pointer"
+            onClick={() => handleCardClick(room)}
+          >
+            <CardHeader className="pb-2">
+              <div className="flex justify-between items-center">
+                <CardTitle>{room.location}</CardTitle>
+                <span className={`px-2 py-1 rounded-full text-xs ${getStatusColor(room.status)}`}>
+                  {room.status}
+                </span>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Capacity Usage</span>
+                    <span className="font-medium">
+                      {getCapacityPercentage(room.usedCapacity, room.totalCapacity)}%
+                    </span>
+                  </div>
+                  <div className="w-full bg-gray-200 rounded-full h-2">
+                    <div 
+                      className="bg-blue-600 h-2 rounded-full" 
+                      style={{ width: `${getCapacityPercentage(room.usedCapacity, room.totalCapacity)}%` }}
+                    ></div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-1">
+                    <div className="text-sm text-gray-600">Temperature</div>
+                    <div className="font-medium">{room.temperature}°C</div>
+                  </div>
+                  <div className="space-y-1">
+                    <div className="text-sm text-gray-600">Last Check</div>
+                    <div className="font-medium">{room.lastChecked}</div>
+                  </div>
+                </div>
+
+                {room.inventory.critical.length > 0 && (
+                  <Alert className="bg-red-50 border-red-200 mt-4">
+                    <AlertTitle className="text-red-800">Critical Items</AlertTitle>
+                    <AlertDescription className="text-red-700">
+                      {room.inventory.critical.length} items near expiry
+                    </AlertDescription>
+                  </Alert>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
 
       {showModal && selectedRoom && (
         <DetailModal
