@@ -145,9 +145,9 @@ const ColdRoomTracker: React.FC = () => {
             </div>
 
             {room.maintenanceNeeded && (
-              <Alert className="bg-red-50 border-red-200">
-                <AlertTitle className="text-red-800">Maintenance Required</AlertTitle>
-                <AlertDescription className="text-red-700">
+              <Alert variant="destructive">
+                <AlertTitle>Maintenance Required</AlertTitle>
+                <AlertDescription>
                   Scheduled maintenance due on {room.nextMaintenance}
                 </AlertDescription>
               </Alert>
@@ -339,9 +339,9 @@ const ColdRoomTracker: React.FC = () => {
                 </div>
 
                 {room.inventory.critical.length > 0 && (
-                  <Alert className="bg-red-50 border-red-200 mt-4">
-                    <AlertTitle className="text-red-800">Critical Items</AlertTitle>
-                    <AlertDescription className="text-red-700">
+                  <Alert variant="warning">
+                    <AlertTitle>Critical Items</AlertTitle>
+                    <AlertDescription>
                       {room.inventory.critical.length} items near expiry
                     </AlertDescription>
                   </Alert>

@@ -2,14 +2,21 @@ import React from 'react';
 
 interface AlertProps {
   children: React.ReactNode;
+  variant?: 'default' | 'destructive' | 'warning';
   className?: string;
 }
 
-export const Alert: React.FC<AlertProps> = ({ children, className = '' }) => {
+export const Alert: React.FC<AlertProps> = ({ children, variant = 'default', className = '' }) => {
+  const variants = {
+    default: 'bg-background text-foreground',
+    destructive: 'bg-destructive/15 text-destructive border-destructive/50',
+    warning: 'bg-warning/15 text-warning border-warning/50'
+  };
+
   return (
     <div
       role="alert"
-      className={`relative w-full rounded-lg border p-4 [&>svg~*]:pl-7 [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-foreground ${className}`}
+      className={`relative w-full rounded-lg border p-4 [&>svg~*]:pl-7 [&>svg+div]:translate-y-[-3px] [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg]:text-foreground ${variants[variant]} ${className}`}
     >
       {children}
     </div>
