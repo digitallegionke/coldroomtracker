@@ -42,7 +42,7 @@ interface DetailModalProps {
   onClose: () => void;
 }
 
-const ColdRoomTracker = () => {
+const ColdRoomTracker: React.FC = () => {
   const [selectedRoom, setSelectedRoom] = useState<ColdRoom | null>(null);
   const [showModal, setShowModal] = useState(false);
 
@@ -290,4 +290,4 @@ const ColdRoomTracker = () => {
   );
 };
 
-export default ColdRoomTracker; 
+export default ColdRoomTracker;
